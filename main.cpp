@@ -122,6 +122,21 @@ class bi_tree
     clear(p->right);
     delete p;
   }
+
+  int height(node *root) {
+    if(root == nullptr)
+      return -1;
+    return max(height(root->left), height(root->right)) + 1;
+  }
+
+  bool balanced(node *root) {
+      int bal;
+      if(!root)
+        return true;
+      bal = height(root->left) - height(root->right);
+      return balanced(root->left) && balanced(root->right) && (bal >= -1 && bal <= 1);;   
+  }
+
 public:
   bi_tree() : root(nullptr) {}
   ~bi_tree() {
@@ -151,16 +166,16 @@ public:
     return root == nullptr;
   }
 
-  
+  int height() {
+    return height(root);
+  }
+
+  bool balanced() {
+    return balanced(root);
+  }  
 };
 
 int main()
 {
-  bi_tree<int> items;
-  items.add(66);
-  items.add(43);
-  items.add(22);
-  items.add(55);
-  items.remove(55);
-  items.postorder();
+  
 }
