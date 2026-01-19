@@ -1,6 +1,7 @@
 # Binary Search Tree (BST) in C++
 
 This is an educational project that implements a Binary Search Tree using C++.
+AVL Tree insertion added (self-balancing with rotations).
 
 ## Features
 - Insert nodes
