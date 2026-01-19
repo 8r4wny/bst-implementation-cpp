@@ -1,5 +1,6 @@
 #include <iostream>
 #include <queue>
+#include <cmath>
 using namespace std;
 
 template <class type>
@@ -129,14 +130,78 @@ class bi_tree
     return max(height(root->left), height(root->right)) + 1;
   }
 
-  bool balanced(node *root) {
+  int checkbalanced(node *root) {
       int bal;
       if(!root)
-        return true;
-      bal = height(root->left) - height(root->right);
-      return balanced(root->left) && balanced(root->right) && (bal >= -1 && bal <= 1);;   
+        return 0;
+
+      int leftHeight = checkbalanced(root->left);
+      if(leftHeight == -1)
+        return -1;
+
+      int rightHeight = checkbalanced(root->right);
+      if(rightHeight == -1)
+        return -1;
+
+      if(abs(leftHeight - rightHeight) > 1)
+        return -1;
+      return 1 + (max(leftHeight, rightHeight));
   }
 
+  void AVL_insert(node *&root, type value) {
+    if(!root) {
+      root = new node{value, nullptr, nullptr};
+      return;
+    }
+    
+    if(value > root->item){
+      AVL_insert(root->right, value);
+    }
+    else {
+      AVL_insert(root->left, value);
+    }
+
+    root = rebalance(root);
+  }
+
+  node *leftrotation(node *z) {
+    node *y = z->right;
+    node *holdyleft = y->left;
+    y->left = z;
+    z->right = holdyleft;
+    return y;
+  }
+  node *rightrotation(node *z) {
+    node *y = z->left;
+    node *holdyright = y->right;
+    y->right = z;
+    z->left = holdyright;
+    return y;
+  }
+  node *rebalance(node *root) {
+    int bf = (height(root->left) - height(root->right));
+
+    // LL imbalacnce
+    if(bf > 1 && height(root->left->left) >= height(root->left->right)){
+      return rightrotation(root);
+    }
+    // RR imbalance
+    if(bf < -1 && height(root->right->right) >= height(root->right->left)){
+      return leftrotation(root);
+    }
+    // LR imbalance
+    if(bf > 1 && height(root->left->right) > height(root->left->left)){
+      root->left = leftrotation(root->left);
+      return rightrotation(root);
+    }
+    // RL imbalance
+    if(bf < -1 && height(root->right->left) > height(root->right->right)){
+      root->right = rightrotation(root->right);
+      return leftrotation(root);
+    }
+
+    return root;
+  }
 public:
   bi_tree() : root(nullptr) {}
   ~bi_tree() {
@@ -171,8 +236,12 @@ public:
   }
 
   bool balanced() {
-    return balanced(root);
-  }  
+    return checkbalanced(root) != -1;
+  }
+
+  void AVL_insert(type value) {
+    return AVL_insert(root, value);
+  }
 };
 
 int main()
